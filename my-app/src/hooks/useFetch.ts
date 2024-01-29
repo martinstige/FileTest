@@ -1,4 +1,4 @@
-import Papa from 'papaparse';
+import Papa, { LocalFile } from 'papaparse';
 type Callback = (data: any) => void;
 const useFetch = () => {
     const sanitizeColumns = (data: any) => {
@@ -27,7 +27,21 @@ const useFetch = () => {
         callback(sanitizedData);
     };
 
-    return { fetchCsvData };
+    const fetchCsvFile = async (file: File, callback: Callback) => {
+       
+         Papa.parse(file, {
+            
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                console.log("Finished:", results.data);
+                const sanitizedData = sanitizeColumns(results.data);
+                callback(sanitizedData);
+            }
+        });
+    };
+
+    return { fetchCsvData, fetchCsvFile };
 
 };
 

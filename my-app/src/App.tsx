@@ -1,90 +1,62 @@
-import { useEffect, useState } from "react";
-import { useLocalStorage } from "@uidotdev/usehooks";
-
-const imageTypeRegex = /image\/(png|jpg|jpeg)/gm;
+import { useState } from "react";
+import styles from "./App.module.css";
+import { ImagePreview } from "./ImagePreview";
+import { CsvPreview } from "./CsvPreview";
 
 function App() {
+  const [documentFiles, setDocumentFiles] = useState<File[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [imageFilesStorage , setImageFilesStorage] = useLocalStorage<string>('imageFiles', '');
-  const [images, setImages] = useState<string[]>([]);
-  const [imageIndex, setImageIndex] = useState<number>(0);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFilesChanged = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { files } = e.target;
-    const validImageFiles = [];
-    if (files && files.length > 0) {
-      for (let i = 0; i < (files.length); i++) {
-        const file = files[i];
-        if (file.type.match(imageTypeRegex)) {
-          validImageFiles.push(file);
-        }
-      }
-      if (validImageFiles.length) {
-        setImageFiles(validImageFiles);
-        setImageFilesStorage(JSON.stringify(validImageFiles));
-        return;
-      }
-    }
-    alert("Selected images are not of valid type!");
+    setImageFiles(Array.from(files || []));
+  };
+  const handleDocumentFilesChanged = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { files } = e.target;
+    setDocumentFiles(Array.from(files || []));
   };
 
-useEffect(() => {
-  
-}, [imageFiles]);
-
-  useEffect(() => {
-    const images: string[] = [], fileReaders: FileReader[] = [];
-
-    let isCancel = false;
-    if (imageFiles.length) {
-      imageFiles.forEach((file) => {
-        const fileReader = new FileReader();
-        fileReaders.push(fileReader);
-        fileReader.onload = e => {
-          const result = e.target?.result;
-          if (result) {
-            images.push(result as string);
-          }
-          if (images.length === imageFiles.length && !isCancel) {
-            setImages(images);
-          }
-        }
-        fileReader.readAsDataURL(file);
-      })
-    };
-    return () => {
-      isCancel = true;
-      fileReaders.forEach(fileReader => {
-        if (fileReader.readyState === 1) {
-          fileReader.abort()
-        }
-      })
-    }
-  }, [imageFiles]);
   return (
-    <div className="App">
-      <form>
-        <p>
-          <label htmlFor="file">Upload images</label>
+    <div className={styles.App}>
+      <h1>Import prototype</h1>
+      <div className={styles.inputForm}>
+        <div className={styles.fileChooser}>
+          <label htmlFor="file1">Upload images</label>
           <input
             type="file"
-            id="file"
-            onChange={changeHandler}
+            id="file1"
+            onChange={handleImageFilesChanged}
             accept="image/png, image/jpg, image/jpeg"
             multiple
           />
-        </p>
-      </form>
-      {
-        images.length > 0 ?
-          <div>
-            <button onClick={() => setImageIndex(imageIndex - 1)} disabled={imageIndex === 0}>Previous</button>
-            <button onClick={() => setImageIndex(imageIndex + 1)} disabled={imageIndex === images.length - 1}>Next</button>
-            {
-              <p > <img src={images[imageIndex]} alt="" width="500px" /> </p>
-            }
-          </div> : null
-      }
+        </div>
+        <div className={styles.fileChooser}>
+          <label htmlFor="file2">Upload documents</label>
+          <input
+            type="file"
+            id="file2"
+            onChange={handleDocumentFilesChanged}
+            accept="application/pdf"
+            multiple
+          />
+        </div>
+        <div className={styles.fileChooser}>
+          <label htmlFor="file3">Upload CSV</label>
+          <input
+            type="file"
+            id="file3"
+            onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+            accept="text/csv"
+          />
+        </div>
+      </div>
+      <ImagePreview imageFiles={imageFiles} />
+      <CsvPreview file={csvFile || undefined} />
     </div>
   );
 }

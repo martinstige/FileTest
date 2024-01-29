@@ -1,0 +1,26 @@
+.App {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputForm{
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  
+  label{
+  }
+
+  input{
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+
+}
