@@ -6,7 +6,7 @@ import { CsvPreview } from "./CsvPreview";
 function App() {
   const [documentFiles, setDocumentFiles] = useState<File[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [importFile, setImportFile] = useState<File | null>(null);
 
   const handleImageFilesChanged = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -50,13 +50,13 @@ function App() {
           <input
             type="file"
             id="file3"
-            onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-            accept="text/csv"
+            onChange={(e) => setImportFile(e.target.files?.[0] || null)}
+            accept="text/csv, application/xlsx, application/vnd.ms-excel"
           />
         </div>
       </div>
-      <ImagePreview imageFiles={imageFiles} />
-      <CsvPreview file={csvFile || undefined} />
+      {/* <ImagePreview imageFiles={imageFiles} /> */}
+      <CsvPreview file={importFile || undefined} imageFiles={imageFiles} />
     </div>
   );
 }

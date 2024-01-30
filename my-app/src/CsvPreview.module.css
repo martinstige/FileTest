@@ -32,3 +32,12 @@
   position: sticky; /* make the table heads sticky */
   top: 0px; /* table head will be placed from the top of the table and sticks to it */
 }
+
+.csvTable td {
+}
+.imageStatusOk{
+   background-color: green;
+}
+.imageStatusMissing{
+    background-color: red;
+ }

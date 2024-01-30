@@ -4,21 +4,30 @@ import useFetch from "./hooks/useFetch";
 
 interface CsvPreviewProps {
   file?: File;
+  imageFiles?: File[];
 }
 
 export function CsvPreview(prop: CsvPreviewProps) {
-  const { fetchCsvFile } = useFetch();
-  const [data, setData] = useState<any[]>([]);
+  const { fetchExcelFile, fetchCsvFile } = useFetch();
+  const [data, setData] = useState<any[][]>([]);
 
   useEffect(() => {
     if (!prop.file) return;
-    fetchCsvFile(prop.file, (data: any[]) => {
-      console.log("csv data fetched" + data);
-      setData(data);
-    });
+
+    if (prop.file.name.endsWith(".csv")) {
+      fetchCsvFile(prop.file, (data: any[][]) => {
+        console.log("csv data fetched", data);
+        setData(data);
+      });
+    } else if (prop.file.name.endsWith(".xlsx")) {
+      fetchExcelFile(prop.file, (data: any[][]) => {
+        console.log("excel data fetched", data);
+        setData(data);
+      });
+    }
   }, [prop.file]);
 
-  const keys = data.length > 0 ? Object.keys(data[0]) : [];
+  const keys = data.length > 0 ? data[0] : [];
 
   return (
     <div className={styles.container}>
@@ -35,18 +44,29 @@ export function CsvPreview(prop: CsvPreviewProps) {
           </tr>
         </thead>
         <tbody>
-          {data.map((obj) => {
-            return (
-              <tr key={obj[0]}>
-                {keys.map((key) => {
-                  return <td>{obj[key]}</td>;
-                })}
-              </tr>
-            );
+          {data.slice(1).map((obj) => {
+            console.log("row", obj);
+            return <ItemRow item={obj} imageFiles={prop.imageFiles} />; 
           })}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function ItemRow(props: { item: any[] , imageFiles?: File[]}) {
+  const imageFileName = props.item[3];
+  const imageFile = props.imageFiles?.find((file) => file.name === imageFileName);
+
+const imageStatus = imageFile ? styles.imageStatusOk : styles.imageStatusMissing ;
+
+  return (
+    <tr key={props.item[0]}>
+      <td>{props.item[0]}</td>
+      <td>{props.item[1]}</td>
+      <td>{props.item[2]}</td>
+      <td className={imageStatus}>{props.item[3]}</td>
+    </tr>
   );
 }
 
