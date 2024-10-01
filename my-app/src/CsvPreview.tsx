@@ -5,6 +5,7 @@ import useFetch from "./hooks/useFetch";
 interface CsvPreviewProps {
   file?: File;
   imageFiles?: File[];
+  docFiles?: File[];
 }
 
 export function CsvPreview(prop: CsvPreviewProps) {
@@ -46,7 +47,7 @@ export function CsvPreview(prop: CsvPreviewProps) {
         <tbody>
           {data.slice(1).map((obj) => {
             console.log("row", obj);
-            return <ItemRow item={obj} imageFiles={prop.imageFiles} />; 
+            return <ItemRow item={obj} imageFiles={prop.imageFiles} docFiles={prop.docFiles}/>;
           })}
         </tbody>
       </table>
@@ -54,11 +55,20 @@ export function CsvPreview(prop: CsvPreviewProps) {
   );
 }
 
-function ItemRow(props: { item: any[] , imageFiles?: File[]}) {
+function ItemRow(props: { item: any[]; imageFiles?: File[] , docFiles?: File[]}) {
   const imageFileName = props.item[3];
-  const imageFile = props.imageFiles?.find((file) => file.name === imageFileName);
+  const imageFile = props.imageFiles?.find(
+    (file) => file.name === imageFileName
+  );
 
-const imageStatus = imageFile ? styles.imageStatusOk : styles.imageStatusMissing ;
+  const docFileName = props.item[4];
+  const docFile = props.docFiles?.find((file) => file.name === docFileName);
+
+  const imageStatus = imageFile
+    ? styles.imageStatusOk
+    : styles.imageStatusMissing;
+
+  const docStatus = docFile ? styles.imageStatusOk : styles.imageStatusMissing;
 
   return (
     <tr key={props.item[0]}>
@@ -66,20 +76,7 @@ const imageStatus = imageFile ? styles.imageStatusOk : styles.imageStatusMissing
       <td>{props.item[1]}</td>
       <td>{props.item[2]}</td>
       <td className={imageStatus}>{props.item[3]}</td>
+      <td className={docStatus}>{props.item[4]}</td>
     </tr>
   );
-}
-
-class Item {
-  id: number;
-  name: string;
-  swlt: number;
-  imageFileName: string;
-
-  constructor(id: number, name: string, swlt: number, imageFileName: string) {
-    this.id = id;
-    this.name = name;
-    this.swlt = swlt;
-    this.imageFileName = imageFileName;
-  }
 }

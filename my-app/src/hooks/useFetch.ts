@@ -32,7 +32,6 @@ const useFetch = () => {
       header: false,
       dynamicTyping: true,
       complete: function (results) {
-        // console.log("Finished:", results.data);
         // const sanitizedData = sanitizeColumns(results.data);
         callback(results.data);
       },
@@ -44,7 +43,7 @@ const useFetch = () => {
       // `rows` is an array of rows
       // each row being an array of cells.
 
-    //   console.log(rows);
+      //   console.log(rows);
       callback(rows);
     });
   };

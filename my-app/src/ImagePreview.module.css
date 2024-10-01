@@ -8,9 +8,19 @@
   border: 1px solid #ccc;
 
   img {
-    width: 500px;
+    max-width: 400px;
+    max-height: 400px;
   }
 
+  .imageInList{
+    max-width: 100px;
+    max-height: 100px;
+  }
+  .imageList{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
   .buttons {
     display: flex;
     flex-direction: row;

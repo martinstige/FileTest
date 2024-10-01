@@ -4,50 +4,39 @@ import styles from "./ImagePreview.module.css";
 
 interface ImagePreviewProps {
   imageFiles: File[];
+  removeImage: (index: number) => void;
 }
 
 export function ImagePreview(props: ImagePreviewProps) {
-  const [imageFiles, setImageFiles] = useState<File[]>(props.imageFiles);
-  const [imageIndex, setImageIndex] = useState<number>(0);
-  const [currentImage, setCurrentImage] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (props.imageFiles.length === 0) return;
-    setImageFiles(props.imageFiles);
-    readFileAsDataURL(imageFiles[imageIndex]).then((image) =>
-      setCurrentImage(image as string)
-    );
-  }, [imageIndex, props.imageFiles]);
 
-  console.log("render image preview");
-
-imageFiles.forEach((file) => {
-    console.log(file.name);
-});
+    const promises = props.imageFiles.map((file) => readFileAsDataURL(file));
+    Promise.all(promises).then((images) => setImages(images as string[]));
+  }, [props.imageFiles]);
 
   return (
     <div className={styles.imagePreview}>
-      <h2>Image preview ({imageFiles.length})</h2>
-      {imageFiles.length > 0 ? (
-        <>
-          <div className={styles.buttons}>
-            <button
-              onClick={() => setImageIndex(imageIndex - 1)}
-              disabled={imageIndex === 0}
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setImageIndex(imageIndex + 1)}
-              disabled={imageIndex === imageFiles.length - 1}
-            >
-              Next
-            </button>
-          </div>
-          <img src={currentImage} alt="" />
-        </>
-          
-      ) : null}
+      <h2>Image preview ({props.imageFiles.length})</h2>
+
+      <div className={styles.imageList}>
+        {images.map((file, index) => {
+          const filename = props?.imageFiles[index]?.name;
+
+          return (
+            <div key={filename}>
+              <img
+                onClick={() => props.removeImage(index)}
+                className={styles.imageInList}
+                src={file}
+                alt={filename}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

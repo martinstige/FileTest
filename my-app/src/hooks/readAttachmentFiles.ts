@@ -11,9 +11,9 @@ export const filterFileTypes = (
   return validImageFiles;
 };
 
-
-
-export const readFileAsDataURL = (file: File): Promise<string | ArrayBuffer | null> => {
+export const readFileAsDataURL = (
+  file: File
+): Promise<string | ArrayBuffer | null> => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.onload = () => resolve(fileReader.result);

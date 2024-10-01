@@ -8,17 +8,38 @@ function App() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [importFile, setImportFile] = useState<File | null>(null);
 
-  const handleImageFilesChanged = async (
+  const handleImageFilesSelected = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { files } = e.target;
-    setImageFiles(Array.from(files || []));
+    setImageFiles(addAsDistinct(imageFiles, files));
   };
+
   const handleDocumentFilesChanged = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { files } = e.target;
-    setDocumentFiles(Array.from(files || []));
+    setDocumentFiles(addAsDistinct(documentFiles, files));
+  };
+
+  const addAsDistinct = (
+    existingFiles: File[],
+    selectedFiles: FileList | null
+  ) => {
+    const combinedFiles = [
+      ...existingFiles,
+      ...Array.from(selectedFiles || []),
+    ];
+
+    const allFileNames = combinedFiles.map((file) => file.name);
+    const distinctFiles = combinedFiles.filter(
+      (file, index) => allFileNames.indexOf(file.name) === index
+    );
+    return distinctFiles;
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(imageFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -30,7 +51,7 @@ function App() {
           <input
             type="file"
             id="file1"
-            onChange={handleImageFilesChanged}
+            onChange={handleImageFilesSelected}
             accept="image/png, image/jpg, image/jpeg"
             multiple
           />
@@ -55,8 +76,8 @@ function App() {
           />
         </div>
       </div>
-      {/* <ImagePreview imageFiles={imageFiles} /> */}
-      <CsvPreview file={importFile || undefined} imageFiles={imageFiles} />
+      <ImagePreview imageFiles={imageFiles} removeImage={removeImage} />
+      <CsvPreview file={importFile || undefined} imageFiles={imageFiles} docFiles={documentFiles}/>
     </div>
   );
 }
